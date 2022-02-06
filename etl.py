@@ -14,22 +14,21 @@ sys.getdefaultencoding()
 
 def process_song_file(cur, conn, filepath):
     """Processes each song file in the folder and
-         insert into corresponding data into songs 
-         and artists tables respectively.
+     insert into corresponding data into songs
+     and artists tables respectively.
 
-        Parameters:
-            cur: cursor from db connection
-            conn: db connection
-            filepath (str): directory/path to song files 
+    Parameters:
+        cur: cursor from db connection
+        conn: db connection
+        filepath (str): directory/path to song files
 
-        Returns:
+    Returns:
     """
 
     df = pd.read_json(filepath, lines=True)
 
     # insert song record
-    song_data = df[["song_id", "title",
-                    "artist_id", "year", "duration"]].values
+    song_data = df[["song_id", "title", "artist_id", "year", "duration"]].values
     song_data_ = tuple([list(song) for song in song_data])
     for data in song_data_:
         cur.execute(song_table_insert, data)
@@ -58,14 +57,14 @@ def process_song_file(cur, conn, filepath):
 
 def process_log_file(cur, conn, filepath):
     """Processes each log file in the folder and
-         insert into corresponding data into time,  
-        users and songplay tables respectively.
+     insert into corresponding data into time,
+    users and songplay tables respectively.
 
-        Parameters:
-            cur: The cursor from db connection
-            conn: The db connection
-            filepath (str): directory/path to song files 
-        Returns:
+    Parameters:
+        cur: The cursor from db connection
+        conn: The db connection
+        filepath (str): directory/path to song files
+    Returns:
     """
     # open log file
     df = pd.read_json(filepath, lines=True)
@@ -76,8 +75,7 @@ def process_log_file(cur, conn, filepath):
     # convert timestamp column to datetime
     t = pd.to_datetime(df["ts"], unit="ms")
     df["ts"] = t
-    column_labels = ["time", "hour", "day",
-                     "week_of_year", "month", "year", "weekday"]
+    column_labels = ["time", "hour", "day", "week_of_year", "month", "year", "weekday"]
     # insert time data records
     time_df = pd.DataFrame([], columns=column_labels)
     time_df["time"] = t
@@ -142,12 +140,12 @@ def process_log_file(cur, conn, filepath):
 def process_data(cur, conn, filepath, func):
     """Processes functions that can process the song and log files.
 
-        Parameters:
-            cur: The cursor from db connection
-            conn: The db connection
-            filepath (str): directory/path to song files
-            func: process function to be used
-        Returns:
+    Parameters:
+        cur: The cursor from db connection
+        conn: The db connection
+        filepath (str): directory/path to song files
+        func: process function to be used
+    Returns:
     """
     # get all files matching extension from directory
     all_files = []
@@ -176,12 +174,15 @@ def main():
     process_data(cur, conn, filepath="data/song_data", func=process_song_file)
     process_data(cur, conn, filepath="data/log_data", func=process_log_file)
     cur.execute(
-        "select * from songplays WHERE song_id is not null and artist_id is not null")
+        "select * from songplays WHERE song_id is not null and artist_id is not null"
+    )
     results = cur.fetchall()
     print()
     print()
     time.sleep(2)
-    print("Result of `select * from songplays WHERE song_id is not null and artist_id is not null`:")
+    print(
+        "Result of `select * from songplays WHERE song_id is not null and artist_id is not null`:"
+    )
     print(results)
 
     conn.close()
